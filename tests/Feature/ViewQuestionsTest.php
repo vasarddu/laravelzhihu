@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Question;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -46,5 +47,25 @@ class ViewQuestionsTest extends TestCase
             ->assertSee($question->content);
     }
 
+    /** @test **/
+    public function user_can_view_a_published_question()
+    {
+        $question = factory(Question::class)
+            ->create(['published_at' => Carbon::parse('-1 week')]);
 
+        $this->get('/questions/' . $question->id)
+            ->assertStatus(200)
+            ->assertSee($question->title)
+            ->assertSee($question->content);
+    }
+
+    /** @test **/
+    public function user_cannot_view_unpublised_question()
+    {
+        $question = factory(Question::class)->create(['published_at' => null]);
+
+        $this->withExceptionHandling()
+            ->get('/questions/'. $question->id)
+            ->assertStatus(404);
+    }
 }
