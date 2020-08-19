@@ -64,6 +64,7 @@ class ViewQuestionsTest extends TestCase
     {
         $question = factory(Question::class)->create(['published_at' => null]);
 
+        // 要生成http响应
         $this->withExceptionHandling()
             ->get('/questions/'. $question->id)
             ->assertStatus(404);
